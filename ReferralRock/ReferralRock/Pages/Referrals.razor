@@ -1,0 +1,115 @@
+﻿@page "/referrals/{DisplayName}/{ReferralCode}"
+
+@using ReferralRock.Models
+@using ReferralRock.Components
+
+@inject BasicHttpClient client
+
+<h3>Referrals for @DisplayName</h3>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Full Details</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Referral referral in referrals)
+        {
+            <tr>
+                <th>@referral.Id</th>
+                <td>@referral.FullName</td>
+                <td><button @onclick=@(() => selectedReferral = referral)>View</button></td>
+                <td><button @onclick=@(() => referralToUpdate = referral)>Update</button></td>
+                <td><button @onclick=@(() => referralToDelete = referral)>Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button @onclick=@(() => isCreatingReferral = true)>Create New Referral</button>
+
+@if (selectedReferral is not null)
+{
+    <DetailsModal model="selectedReferral" Title="Referral Details" OnCloseCallback="() => selectedReferral = null" />
+}
+
+@if (isCreatingReferral)
+{
+    <CreateReferralModal
+        ReferralCode="@ReferralCode"
+        OnCloseCallback="@(() => isCreatingReferral = false)"
+        OnSubmitCallback="@(referral => referrals = referrals.Append(referral).ToArray())"
+        />
+}
+
+@if (referralToUpdate is not null)
+{
+    <EditReferralModal
+        Referral="referralToUpdate"
+        ReferralId="@(referralToUpdate.Id.ToString())"
+        OnCloseCallback="@(() => referralToUpdate = null)"
+        OnSubmitCallback="GetReferrals"
+        />
+}
+
+@if (referralToDelete is not null)
+{
+    <ConfirmationModal 
+        ConfirmationText="Are you sure you want to delete this referral?"
+        OnCloseCallback="@(() => referralToDelete = null)"
+        OnContinueCallback="@(() => DeleteReferral(referralToDelete))"/>
+}
+
+@code {
+    [Parameter]
+    public string DisplayName { get; set; } = "";
+    [Parameter]
+    public string ReferralCode { get; set; } = "";
+
+    private Referral[] referrals { get; set; } = Array.Empty<Referral>();
+
+    private Referral? selectedReferral = null;
+
+    private Referral? referralToUpdate = null;
+    private Referral? referralToDelete = null;
+
+    private bool isCreatingReferral = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetReferrals();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task GetReferrals()
+    {
+        referrals = (await client.GetAsync<GetReferralsResponse>($"/api/referrals?query={ReferralCode}"))!.Referrals;
+    }
+
+    protected async Task DeleteReferral(Referral referral)
+    {
+        RemoveReferralResult[]? confirmation = await client.PostAsync<RemoveReferralResult[], RemoveReferralInfo[]>("/api/referral/remove", new[] {
+            new RemoveReferralInfo {
+                Query = new ReferralQuery {
+                    PrimaryInfo = new PrimaryInfo {
+                        ReferralId = referral.Id.ToString()
+                    }
+                }
+            }
+        });
+
+        referralToDelete = null;
+
+        if (confirmation is not null)
+        {
+            await GetReferrals();
+        }
+    }
+}

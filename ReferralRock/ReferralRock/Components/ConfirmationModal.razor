@@ -1,0 +1,23 @@
+﻿@namespace ReferralRock.Components
+
+@using ReferralRock.Models
+@using ReferralRock.Components
+
+<Modal Title="Confirmation" OnCloseCallback="OnCloseCallback">
+    <ModalBody>
+        <span>@ConfirmationText</span>
+    </ModalBody>
+    <ModalFooter>
+        <button @onclick=@OnCloseCallback class="btn btn-primary">Cancel</button>
+        <button @onclick=@OnContinueCallback class="btn btn-success">Continue</button>
+    </ModalFooter>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnCloseCallback { get; set; }
+    [Parameter]
+    public EventCallback OnContinueCallback { get; set; }
+    [Parameter]
+    public string ConfirmationText { get; set; } = "Are you sure you want to perform this action?";
+}

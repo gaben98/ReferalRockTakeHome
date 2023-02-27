@@ -1,0 +1,39 @@
+﻿<div class="modal" tabindex="-1" role="dialog" style="display:inherit">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="close" @onclick=OnCloseCallback aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <section>
+                @ModalBody
+            </section>
+            @if (ModalFooter is not null)
+            {
+                @ModalFooter
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary" @onclick=OnCloseCallback>Close</button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    #pragma warning disable CS8618
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    [Parameter]
+    public RenderFragment? ModalFooter { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public EventCallback OnCloseCallback { get; set; }
+    #pragma warning restore CS8618
+}

@@ -1,0 +1,51 @@
+﻿@namespace ReferralRock.Components
+
+@using System.Reflection
+@using ReferralRock.Models
+
+@typeparam T
+
+<Modal Title="@Title" OnCloseCallback="OnCloseCallback">
+    <ModalBody>
+        @{
+            PropertyInfo[] props = typeof(T).GetProperties();
+            <table>
+                @foreach (PropertyInfo prop in props)
+                {
+                    <tr>
+                        <td>@prop.Name</td>
+                        <td>@prop.GetValue(model)</td>
+                    </tr>
+                }
+            </table>
+        }
+    </ModalBody>
+</Modal>
+
+@code {
+    #pragma warning disable CS8618
+    [Parameter]
+    public T model { get; set; }
+    #pragma warning restore CS8618
+
+    [Parameter]
+    public EventCallback OnCloseCallback { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        var props = typeof(UpdateReferral).GetProperties();
+        foreach (PropertyInfo prop in props)
+        {
+            var id = char.ToLower(prop.Name[0]) + prop.Name.Substring(1);
+            var modelName = "ReferralToUpdate";
+
+            Console.WriteLine($"<label for=\"{id}\">{prop.Name}</label>");
+            Console.WriteLine($"<InputText id=\"{id}\" @bind-Value=\"{modelName}.{prop.Name}\" />");
+        }
+
+        base.OnInitialized();
+    }
+}

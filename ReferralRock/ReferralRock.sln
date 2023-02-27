@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReferralRock", "ReferralRock\ReferralRock.csproj", "{535807E9-D41C-441C-9180-848AA32C5674}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{535807E9-D41C-441C-9180-848AA32C5674}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{535807E9-D41C-441C-9180-848AA32C5674}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{535807E9-D41C-441C-9180-848AA32C5674}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{535807E9-D41C-441C-9180-848AA32C5674}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF832B39-7C2F-4A25-BB99-6189984B3530}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,22 @@
+﻿@page "/"
+
+@using ReferralRock.Components
+@using ReferralRock.Models
+
+@inject BasicHttpClient client
+
+<PageTitle>Home Page</PageTitle>
+
+<MemberList Members="members" />
+
+@code
+{
+    private Member[] members { get; set; } = Array.Empty<Member>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = (await client.GetAsync<GetMembersResponse>("/api/members"))!.Members;
+
+        await base.OnInitializedAsync();
+    }
+}

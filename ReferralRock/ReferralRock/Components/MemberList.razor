@@ -1,0 +1,50 @@
+﻿@using ReferralRock.Models
+
+@inject NavigationManager navManager
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Referrals</th>
+            <th>Full Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Member member in Members)
+        {
+            <tr>
+                <th>@member.Id</th>
+                <td>@member.DisplayName</td>
+                <td><button @onclick="() => ViewReferrals(member)">View</button></td>
+                <td><button @onclick="() => ViewMember(member)">View</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (selectedMember is not null)
+{
+    <DetailsModal model="selectedMember" OnCloseCallback="@(() => selectedMember = null)" Title="@(selectedMember.DisplayName + " Details")" />
+}
+
+@code {
+    #pragma warning disable CS8618
+    [Parameter]
+    public Member[] Members { get; set; }
+#pragma warning restore CS8618
+
+    private Member? selectedMember = null;
+
+    private void ViewReferrals(Member member)
+    {
+        navManager.NavigateTo($"/referrals/{member.DisplayName}/{member.ReferralCode}");
+    }
+
+    private void ViewMember(Member member)
+    {
+        selectedMember = member;
+        StateHasChanged();
+    }
+}

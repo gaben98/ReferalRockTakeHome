@@ -1,0 +1,100 @@
+﻿@namespace ReferralRock.Components
+
+@using ReferralRock.Models
+@using ReferralRock.Components
+
+@inject BasicHttpClient client
+
+<Modal Title="Create Referral" OnCloseCallback="@OnCloseCallback">
+    <ModalBody>
+        <EditForm Model="ReferralToCreate">
+            <DataAnnotationsValidator />
+            <label for="showAllFields">Show All Fields</label>
+            <InputCheckbox @bind-Value="ShowAllFields" id="showAllFields" />
+            <br />
+            <label for="firstName">First Name</label>
+            <InputText id="firstName" @bind-Value="ReferralToCreate.FirstName" class="form-control" />
+            <label for="lastName">Last Name</label>
+            <InputText id="lastName" @bind-Value="ReferralToCreate.LastName" class="form-control" />
+            <label for="email">Email</label>
+            <InputText id="email" @bind-Value="ReferralToCreate.Email" class="form-control" />
+            <label for="phoneNumber">Phone Number</label>
+            <InputText id="phoneNumber" @bind-Value="ReferralToCreate.PhoneNumber" class="form-control" />
+            @if (ShowAllFields)
+            {
+                <label for="preferredContact">Preferred Contact</label>
+                <InputText id="preferredContact" @bind-Value="ReferralToCreate.PreferredContact" class="form-control" />
+                <label for="externalIdentifier">External Identifier</label>
+                <InputText id="externalIdentifier" @bind-Value="ReferralToCreate.ExternalIdentifier" class="form-control" />
+                <label for="amount">Amount</label>
+                <InputNumber id="amount" @bind-Value="ReferralToCreate.Amount" class="form-control" />
+                <label for="companyName">Company Name</label>
+                <InputText id="companyName" @bind-Value="ReferralToCreate.CompanyName" class="form-control" />
+                <label for="note">Note</label>
+                <InputText id="note" @bind-Value="ReferralToCreate.Note" class="form-control" />
+                <label for="publicNote">Public Note</label>
+                <InputText id="publicNote" @bind-Value="ReferralToCreate.PublicNote" class="form-control" />
+                <label for="customOption1Name">Custom Option 1 Name</label>
+                <InputText id="customOption1Name" @bind-Value="ReferralToCreate.CustomOption1Name" class="form-control" />
+                <label for="customOption2Name">Custom Option 2 Name</label>
+                <InputText id="customOption2Name" @bind-Value="ReferralToCreate.CustomOption2Name" class="form-control" />
+                <label for="customText1Name">Custom Text 1 Name</label>
+                <InputText id="customText1Name" @bind-Value="ReferralToCreate.CustomText1Name" class="form-control" />
+                <label for="customText2Name">Custom Text 2 Name</label>
+                <InputText id="customText2Name" @bind-Value="ReferralToCreate.CustomText2Name" class="form-control" />
+                <label for="customText3Name">Custom Text 3 Name</label>
+                <InputText id="customText3Name" @bind-Value="ReferralToCreate.CustomText3Name" class="form-control" />
+                <label for="customOption1Value">Custom Option 1 Value</label>
+                <InputText id="customOption1Value" @bind-Value="ReferralToCreate.CustomOption1Value" class="form-control" />
+                <label for="customOption2Value">Custom Option 2 Value</label>
+                <InputText id="customOption2Value" @bind-Value="ReferralToCreate.CustomOption2Value" class="form-control" />
+                <label for="customText1Value">Custom Text 1 Value</label>
+                <InputText id="customText1Value" @bind-Value="ReferralToCreate.CustomText1Value" class="form-control" />
+                <label for="customText2Value">Custom Text 2 Value</label>
+                <InputText id="customText2Value" @bind-Value="ReferralToCreate.CustomText2Value" class="form-control" />
+                <label for="customText3Value">Custom Text 3 Value</label>
+                <InputText id="customText3Value" @bind-Value="ReferralToCreate.CustomText3Value" class="form-control" />
+                <label for="status">Status</label>
+                <InputText id="status" @bind-Value="ReferralToCreate.Status" class="form-control" />
+            }
+        
+        </EditForm>
+    </ModalBody>
+    <ModalFooter>
+        <button @onclick=@OnCloseCallback class="btn btn-primary">Cancel</button>
+        <button @onclick=@PostReferral class="btn btn-success">Save</button>
+    </ModalFooter>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnCloseCallback { get; set; }
+    [Parameter]
+    public EventCallback<Referral> OnSubmitCallback { get; set; }
+
+#pragma warning disable CS8618
+    [Parameter]
+    public string ReferralCode { get; set; }
+#pragma warning restore CS8618
+
+    public bool ShowAllFields { get; set; } = false;
+
+    private NewReferral ReferralToCreate = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ReferralToCreate.ReferralCode = ReferralCode;
+
+        await base.OnInitializedAsync();
+    }
+
+    public async Task PostReferral ()
+    {
+        ReferralConfirmation? confirmation = await client.PostAsync<ReferralConfirmation, NewReferral>("/api/referrals", ReferralToCreate);
+        if (confirmation is not null)
+        {
+            await OnSubmitCallback.InvokeAsync(confirmation.Referral);
+            await OnCloseCallback.InvokeAsync();
+        }
+    }
+}
